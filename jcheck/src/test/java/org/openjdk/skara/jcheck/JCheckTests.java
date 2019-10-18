@@ -22,12 +22,13 @@
  */
 package org.openjdk.skara.jcheck;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.openjdk.skara.census.Census;
 import org.openjdk.skara.test.TemporaryDirectory;
 import org.openjdk.skara.vcs.*;
 import org.openjdk.skara.vcs.openjdk.CommitMessageParsers;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.*;
 import java.nio.file.*;
@@ -243,6 +244,7 @@ class JCheckTests {
     void checksForCommit(VCS vcs) throws Exception {
         try (var dir = new TemporaryDirectory()) {
             var repoPath = dir.path().resolve("repo");
+            Files.createDirectories(repoPath);
             var repo = CheckableRepository.create(repoPath, vcs);
 
             var readme = repoPath.resolve("README");
@@ -268,6 +270,7 @@ class JCheckTests {
     void checkRemoval(VCS vcs) throws Exception {
         try (var dir = new TemporaryDirectory()) {
             var repoPath = dir.path().resolve("repo");
+            Files.createDirectories(repoPath);
             var repo = CheckableRepository.create(repoPath, vcs);
 
             var file = repoPath.resolve("file.txt");

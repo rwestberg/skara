@@ -1,0 +1,26 @@
+name: Automatic rebase
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install mercurial (macOS)
+      if: contains(matrix.os, 'mac')
+      run: brew install mercurial
+
+    - name: Rebase to target ref
+      env:
+        GIT_COMMITTER_NAME: duke
+        GIT_COMMITTER_EMAIL: duke@openjdk.org
+      run: git rebase origin/${{ github.base_ref }}
+
+    - name: Build with Gradle (compile only)
+      run: sh gradlew compileJava

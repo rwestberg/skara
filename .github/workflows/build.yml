@@ -1,0 +1,19 @@
+name: Java CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up OpenJDK 12
+      uses: actions/setup-java@v1
+      with:
+        java-version: '12.0.2'
+        architecture: x64
+        jdkFile: https://download.java.net/java/GA/jdk13/5b8a42f3905b406298b72d750b6919f6/33/GPL/openjdk-13_linux-x64_bin.tar.gz
+    - name: Build with Gradle
+      run: gradle build

@@ -1,4 +1,4 @@
-name: Build and test
+name: Automatic rebase compilation test
 
 on: [pull_request]
 

@@ -17,6 +17,9 @@ jobs:
       run: brew install mercurial
 
     - name: Rebase to target ref
+      env:
+        GIT_COMMITTER_NAME: duke
+        GIT_COMMITTER_EMAIL: duke@openjdk.org
       run: git rebase origin/${{ github.base_ref }}
 
     - name: Build with Gradle (compile only)

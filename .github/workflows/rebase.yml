@@ -1,6 +1,6 @@
 name: Build and test
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
@@ -16,5 +16,8 @@ jobs:
       if: contains(matrix.os, 'mac')
       run: brew install mercurial
 
-    - name: Build with Gradle
-      run: sh gradlew build
+    - name: Rebase to target ref
+      run: git rebase ${{ github.base_ref }}
+
+    - name: Build with Gradle (compile only)
+      run: sh gradlew compileJava

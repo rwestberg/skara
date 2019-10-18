@@ -17,7 +17,7 @@ jobs:
       run: brew install mercurial
 
     - name: Rebase to target ref
-      run: git rebase ${{ github.base_ref }}
+      run: git rebase origin/${{ github.base_ref }}
 
     - name: Build with Gradle (compile only)
       run: sh gradlew compileJava

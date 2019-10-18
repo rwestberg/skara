@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest, macOS-latest]
 
     steps:
     - uses: actions/checkout@v1
@@ -18,7 +18,7 @@ jobs:
         java-version: '12.0.2'
         architecture: x64
 
-    - name: Setup mac
+    - name: Install mercurial (macOS)
       if: contains(matrix.os, 'mac')
       run: brew install mercurial
 

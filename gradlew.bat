@@ -37,7 +37,7 @@ goto done
 
 :extractJdk
 echo Extracting JDK...
-tar -xf %~dp0/.jdk/%JDK_WINDOWS_DIR%.zip -C %~dp0/.jdk/temp
+%WINDIR%\System32\tar -xf %~dp0/.jdk/%JDK_WINDOWS_DIR%.zip -C %~dp0/.jdk/temp
 for /d %%i in (%~dp0\.jdk\temp\*) do move %%i %~dp0\.jdk\%JDK_WINDOWS_DIR%
 rmdir %~dp0\.jdk\temp
 
@@ -55,7 +55,7 @@ goto done
 
 :extractGradle
 echo Extracting Gradle...
-tar -xf %~dp0/.gradle/%GRADLE_DIR%.zip -C %~dp0/.gradle/temp
+%WINDIR%\System32\tar -xf %~dp0/.gradle/%GRADLE_DIR%.zip -C %~dp0/.gradle/temp
 for /d %%i in (%~dp0\.gradle\temp\*) do move %%i %~dp0\.gradle\%GRADLE_DIR%
 rmdir %~dp0\.gradle\temp
 

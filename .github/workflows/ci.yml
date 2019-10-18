@@ -12,15 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Set up JDK 12
-      uses: actions/setup-java@v1
-      with:
-        java-version: '12.0.2'
-        architecture: x64
-
     - name: Install mercurial (macOS)
       if: contains(matrix.os, 'mac')
       run: brew install mercurial
 
     - name: Build with Gradle
-      run: gradle build
+      run: sh gradlew build

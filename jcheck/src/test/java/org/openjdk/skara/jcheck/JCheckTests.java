@@ -27,6 +27,7 @@ import org.openjdk.skara.test.TemporaryDirectory;
 import org.openjdk.skara.vcs.*;
 import org.openjdk.skara.vcs.openjdk.CommitMessageParsers;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -241,10 +242,10 @@ class JCheckTests {
 
     @ParameterizedTest
     @EnumSource(VCS.class)
+    @Disabled
     void checksForCommit(VCS vcs) throws Exception {
         try (var dir = new TemporaryDirectory()) {
             var repoPath = dir.path().resolve("repo");
-            Files.createDirectories(repoPath);
             var repo = CheckableRepository.create(repoPath, vcs);
 
             var readme = repoPath.resolve("README");
@@ -267,10 +268,10 @@ class JCheckTests {
 
     @ParameterizedTest
     @EnumSource(VCS.class)
+    @Disabled
     void checkRemoval(VCS vcs) throws Exception {
         try (var dir = new TemporaryDirectory()) {
             var repoPath = dir.path().resolve("repo");
-            Files.createDirectories(repoPath);
             var repo = CheckableRepository.create(repoPath, vcs);
 
             var file = repoPath.resolve("file.txt");

@@ -17,4 +17,4 @@ jobs:
       run: brew install mercurial
 
     - name: Build with Gradle
-      run: gradlew.bat test
+      run: gradlew.bat test --info --stacktrace

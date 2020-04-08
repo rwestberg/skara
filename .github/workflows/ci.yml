@@ -8,7 +8,12 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build and test
-      run: sh gradlew test --info --stacktrace
+      run: sh gradlew testReport --info --stacktrace
+    - uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: test-report
+        path: build/reports/allTests
 
   mac:
     runs-on: 'macOS-latest'
@@ -17,12 +22,22 @@ jobs:
     - name: Install Mercurial
       run: brew install mercurial
     - name: Build and test
-      run: sh gradlew test --info --stacktrace
+      run: sh gradlew testReport --info --stacktrace
+    - uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: test-report
+        path: build/reports/allTests
 
   win:
     runs-on: 'windows-latest'
     steps:
     - uses: actions/checkout@v1
     - name: Build and test
-      run: gradlew.bat test --info --stacktrace
+      run: gradlew.bat testReport --info --stacktrace
       shell: cmd
+    - uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: test-report
+        path: build/reports/allTests

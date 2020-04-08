@@ -47,7 +47,7 @@ public class JSONParserTests {
     @Test
     void testParseInt() {
         var value = parser.parse("17"); 
-        assertEquals(value.asInt(), 17);
+        assertEquals(value.asInt(), 8);
     }
 
     @Test

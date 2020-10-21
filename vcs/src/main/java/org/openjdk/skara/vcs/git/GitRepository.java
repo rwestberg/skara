@@ -464,7 +464,7 @@ public class GitRepository implements Repository {
         cmd.add(refspec);
         try (var p = capture(cmd)) {
             await(p);
-            return resolve("FETCH_HEAD").get();
+            return resolve("FETCH_HEAD").orElseThrow(() -> new IOException("Cannot resolve FETCH_HEAD"));
         }
     }
 

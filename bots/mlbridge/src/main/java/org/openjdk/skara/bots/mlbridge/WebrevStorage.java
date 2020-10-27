@@ -271,6 +271,17 @@ class WebrevStorage {
             var placeholder = generatePlaceholder(pr, base, head);
             URI uri = null;
 
+            if (diff == null) {
+                var baseCommit = localRepository.commitMetadata(base);
+                if (baseCommit.isEmpty()) {
+                    localRepository.fetch(pr.repository().url(), "+" + base.hex() + ":mlbridge_webrev_base");
+                }
+                var headCommit = localRepository.commitMetadata(head);
+                if (headCommit.isEmpty()) {
+                    localRepository.fetch(pr.repository().url(), "+" + base.hex() + ":mlbridge_webrev_head");
+                }
+            }
+
             if (generateJSON) {
                 var jsonLocalStorage = Repository.materialize(scratchPath, jsonStorage.url(),
                                                               "+" + storageRef + ":mlbridge_webrevs");

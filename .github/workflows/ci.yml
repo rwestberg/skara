@@ -25,9 +25,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo
             })
-            console.log(upstream)
-            console.dir(upstream)
-            return upstream.source
+            console.log(upstream.data)
+            return upstream.data.source
 
       - name: Print upstream
         run: echo ${{ steps.upstream_repo.outputs.result }}

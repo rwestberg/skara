@@ -29,7 +29,11 @@ jobs:
       - name: Print upstream
         run: echo ${{ steps.upstream_repo.outputs.result }}
 
+      - name: Print 2
+        run: echo ${{ fromJson(steps.upstream_repo.outputs.result) }}
+
   linux:
+    if: false
     name: Linux x64
     runs-on: 'ubuntu-20.04'
     needs: prerequisites
@@ -40,6 +44,7 @@ jobs:
       run: sh gradlew test --info --stacktrace
 
   mac:
+    if: false
     name: macOS x64
     runs-on: 'macos-10.15'
     needs: prerequisites
@@ -52,6 +57,7 @@ jobs:
       run: sh gradlew test --info --stacktrace
 
   win:
+    if: false
     name: Windows x64
     runs-on: 'windows-2019'
     needs: prerequisites

@@ -20,10 +20,12 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
+            console.log('Hello')
             const upstream = github.repos.get({
               owner: context.repo.owner,
               repo: context.repo.repo
             })
+            console.log('Got ' + upstream)
             return upstream.source
 
       - name: Print upstream

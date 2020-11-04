@@ -1,11 +1,39 @@
-name: Build and test
+name: Pre-submit tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - master
+      - pr/*
 
 jobs:
+  prerequisites:
+    name: Prerequisites
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Checkout the source
+        uses: actions/checkout@v2
+
+      - name: Determine target branch
+        id: upstream_repo
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const upstream = github.repos.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            return upstream.source
+
+      - name: Print upstream
+        run: echo ${{ steps.upstream_repo.outputs.result }}
+
   linux:
     name: Linux x64
     runs-on: 'ubuntu-20.04'
+    needs: prerequisites
+
     steps:
     - uses: actions/checkout@v1
     - name: Build and test
@@ -14,6 +42,8 @@ jobs:
   mac:
     name: macOS x64
     runs-on: 'macos-10.15'
+    needs: prerequisites
+
     steps:
     - uses: actions/checkout@v1
     - name: Install Mercurial
@@ -24,6 +54,8 @@ jobs:
   win:
     name: Windows x64
     runs-on: 'windows-2019'
+    needs: prerequisites
+
     steps:
     - uses: actions/checkout@v1
     - name: Build and test

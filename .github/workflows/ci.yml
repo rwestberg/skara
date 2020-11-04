@@ -25,7 +25,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo
             })
-            console.log('Got ' + upstream)
+            console.log(upstream)
+            console.dir(upstream)
             return upstream.source
 
       - name: Print upstream

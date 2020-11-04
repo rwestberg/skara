@@ -21,7 +21,7 @@ jobs:
         with:
           script: |
             console.log('Hello')
-            const upstream = github.repos.get({
+            const upstream = await github.repos.get({
               owner: context.repo.owner,
               repo: context.repo.repo
             })

@@ -15,24 +15,22 @@ jobs:
       - name: Checkout the source
         uses: actions/checkout@v2
 
-      - name: Determine target branch
+      - name: Determine fork parent
         id: upstream_repo
         uses: actions/github-script@v3
         with:
+          result-encoding: string
           script: |
             console.log('Hello')
             const upstream = await github.repos.get({
               owner: context.repo.owner,
               repo: context.repo.repo
             })
-            console.log(upstream.data)
-            return upstream.data.source
+            console.log(upstream.data.source)
+            return upstream.data.source.clone_url
 
       - name: Print upstream
         run: echo ${{ steps.upstream_repo.outputs.result }}
-
-      - name: Print 2
-        run: echo ${{ fromJson(steps.upstream_repo.outputs.result) }}
 
   linux:
     if: false

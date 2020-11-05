@@ -15,55 +15,54 @@ jobs:
       - name: Checkout the source
         uses: actions/checkout@v2
 
-      - name: Determine fork parent
+      - name: Determine fork source
         id: upstream_repo
         uses: actions/github-script@v3
         with:
           result-encoding: string
-          script: |
-            console.log('Hello')
-            const upstream = await github.repos.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
-            console.log(upstream.data.source)
-            return upstream.data.source.clone_url
+          script: "return await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo }).data.source.clone_url"
 
       - name: Print upstream
         run: echo ${{ steps.upstream_repo.outputs.result }}
 
+      - name: Determine target branch
+        run: |
+          git remote add upstream ${{ steps.upstream_repo.outputs.result }}
+          git fetch upstream
+          git show-branch | sed "s/].*//" | grep "\*" | grep -v "$(git rev-parse --abbrev-ref HEAD)" | head -n1 | sed "s/^.*\[//" 
+
   linux:
     if: false
     name: Linux x64
-    runs-on: 'ubuntu-20.04'
+    runs-on: "ubuntu-20.04"
     needs: prerequisites
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Build and test
-      run: sh gradlew test --info --stacktrace
+      - uses: actions/checkout@v1
+      - name: Build and test
+        run: sh gradlew test --info --stacktrace
 
   mac:
     if: false
     name: macOS x64
-    runs-on: 'macos-10.15'
+    runs-on: "macos-10.15"
     needs: prerequisites
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Install Mercurial
-      run: brew install mercurial
-    - name: Build and test
-      run: sh gradlew test --info --stacktrace
+      - uses: actions/checkout@v1
+      - name: Install Mercurial
+        run: brew install mercurial
+      - name: Build and test
+        run: sh gradlew test --info --stacktrace
 
   win:
     if: false
     name: Windows x64
-    runs-on: 'windows-2019'
+    runs-on: "windows-2019"
     needs: prerequisites
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Build and test
-      run: gradlew.bat test --info --stacktrace
-      shell: cmd
+      - uses: actions/checkout@v1
+      - name: Build and test
+        run: gradlew.bat test --info --stacktrace
+        shell: cmd

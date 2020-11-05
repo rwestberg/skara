@@ -20,7 +20,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           result-encoding: string
-          script: "return await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo }).data.source.clone_url"
+          script: "return (await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo })).data.source.clone_url"
 
       - name: Print upstream
         run: echo ${{ steps.upstream_repo.outputs.result }}

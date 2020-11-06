@@ -27,11 +27,11 @@ jobs:
         uses: actions/github-script@v3
         with:
           result-encoding: string
-          script: "return (await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo })).data.source.full_name"
+          script: "return (await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo })).data.source.name"
 
       - name: Check if submit tests should actually run
         id: check_submit
-        run: echo "::set-output name=should_run::${{ format('openjdk/{0}', context.repo.repo) == steps.upstream_repo.outputs.result }}"
+        run: echo "::set-output name=should_run::${{ env.TARGET_PROJECT == steps.upstream_repo.outputs.result }}"
 
       - name: Checkout the source
         uses: actions/checkout@v2

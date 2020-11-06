@@ -1,5 +1,15 @@
 name: Pre-submit tests
 
+# The pre-submit tests will only runs for forks of the TARGET_PROJECT defined below. This is set to "skara" by default,
+# and can be changed by downstream projects if they also want to run pre-submit tests. 
+#
+# The tests will attempt to merge the latest commits from TARGET_BRANCH before executing, to ensure that what is tested
+# is as close as possible to what the final integration result will be. This is set to "master" by default, and can
+# be changed by downstream projects that utilize multiple branches in order to select the correct one.
+env:
+  TARGET_PROJECT: skara
+  TARGET_BRANCH: master
+
 on:
   push:
     branches-ignore:
@@ -12,24 +22,27 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - name: Checkout the source
-        uses: actions/checkout@v2
-
-      - name: Determine fork source
+      - name: Determine target project name (fork source)
         id: upstream_repo
         uses: actions/github-script@v3
         with:
           result-encoding: string
-          script: "return (await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo })).data.source.clone_url"
+          script: "return (await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo })).data.source.full_name"
 
-      - name: Print upstream
-        run: echo ${{ steps.upstream_repo.outputs.result }}
+      - name: Check if submit tests should actually run
+        id: check_submit
+        run: echo "::set-output name=should_run::${{ format('openjdk/{0}', context.repo.repo) == steps.upstream_repo.outputs.result }}"
+
+      - name: Checkout the source
+        uses: actions/checkout@v2
+        if: steps.check_submit.outputs.should_run != 'false'
 
       - name: Determine target branch
         run: |
           git remote add upstream ${{ steps.upstream_repo.outputs.result }}
           git fetch upstream
           git show-branch | sed "s/].*//" | grep "\*" | grep -v "$(git rev-parse --abbrev-ref HEAD)" | head -n1 | sed "s/^.*\[//" 
+        if: steps.check_submit.outputs.should_run != 'false'
 
   linux:
     if: false

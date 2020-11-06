@@ -92,7 +92,7 @@ jobs:
           fetch-depth: 1000
 
       - name: Merge target branches
-        run: ${{ needs.prerequisites.outputs.merge_command }}
+        run: ${{ needs.prerequisites.outputs.merge_target_command }}
 
       - name: Install Mercurial
         run: brew install mercurial

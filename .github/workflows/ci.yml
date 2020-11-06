@@ -36,6 +36,8 @@ jobs:
 
       - name: Checkout the source
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
         if: steps.check_submit.outputs.should_run != 'false'
 
       - name: Determine merge target hash

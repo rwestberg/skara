@@ -1,14 +1,12 @@
-name: Pre-submit tests
-
+#
 # The pre-submit tests will only runs for forks of the TARGET_PROJECT defined below. This is set to "skara" by default,
 # and can be changed by downstream projects if they also want to run pre-submit tests. 
 #
 # The tests will attempt to merge the latest commits from TARGET_BRANCH before executing, to ensure that what is tested
 # is as close as possible to what the final integration result will be. This is set to "master" by default, and can
 # be changed by downstream projects that utilize multiple branches in order to select the correct one.
-env:
-  TARGET_PROJECT: skara
-  TARGET_BRANCH: master
+#
+name: Pre-submit tests
 
 on:
   push:
@@ -20,6 +18,9 @@ jobs:
   prerequisites:
     name: Prerequisites
     runs-on: "ubuntu-latest"
+    env:
+      TARGET_PROJECT: skara
+      TARGET_BRANCH: master
 
     steps:
       - name: Determine target project name (fork source)
@@ -37,11 +38,12 @@ jobs:
         uses: actions/checkout@v2
         if: steps.check_submit.outputs.should_run != 'false'
 
-      - name: Determine target branch
+      - name: Determine merge target hash
+        id: merge_target
         run: |
           git remote add upstream ${{ steps.upstream_repo.outputs.result }}
           git fetch upstream
-          git show-branch | sed "s/].*//" | grep "\*" | grep -v "$(git rev-parse --abbrev-ref HEAD)" | head -n1 | sed "s/^.*\[//" 
+          echo "::set-output name="hash::`git rev-parse upstream/${TARGET_BRANCH}`"
         if: steps.check_submit.outputs.should_run != 'false'
 
   linux:

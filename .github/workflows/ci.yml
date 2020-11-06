@@ -21,6 +21,9 @@ jobs:
     env:
       TARGET_PROJECT: skara
       TARGET_BRANCH: master
+    outputs:
+      should_run: ${{ steps.check_submit.outputs.should_run }}
+      merge_target_command: ${{ steps.try_merge_target.outputs.command }}
 
     steps:
       - name: Determine target project name (fork source)
@@ -49,7 +52,7 @@ jobs:
         if: steps.check_submit.outputs.should_run != 'false'
 
       - name: Determine merge strategy
-        id: merge_strategy
+        id: try_merge_target
         run: >
           (git -c user.name="presubmit" -c user.email="presubmit@github.actions" merge --no-edit ${{ steps.merge_target.outputs.hash }} && echo "::set-output name=command::git -c user.name="presubmit" -c user.email="presubmit@github.actions" merge --no-edit ${{ steps.merge_target.outputs.hash }}") ||
           (git merge --abort && git rebase ${{ steps.merge_target.outputs.hash }} && echo "::set-output name=command::git rebase ${{ steps.merge_target.outputs.hash }}") ||
@@ -65,7 +68,14 @@ jobs:
     needs: prerequisites
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout the source
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
+
+      - name: Merge target branches
+        run: ${{ needs.prerequisites.outputs.merge_command }}
+
       - name: Build and test
         run: sh gradlew test --info --stacktrace
 
@@ -76,9 +86,17 @@ jobs:
     needs: prerequisites
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout the source
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
+
+      - name: Merge target branches
+        run: ${{ needs.prerequisites.outputs.merge_command }}
+
       - name: Install Mercurial
         run: brew install mercurial
+
       - name: Build and test
         run: sh gradlew test --info --stacktrace
 
@@ -89,7 +107,14 @@ jobs:
     needs: prerequisites
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout the source
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
+
+      - name: Merge target branches
+        run: ${{ needs.prerequisites.outputs.merge_command }}
+
       - name: Build and test
         run: gradlew.bat test --info --stacktrace
         shell: cmd

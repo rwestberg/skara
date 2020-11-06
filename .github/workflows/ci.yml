@@ -41,7 +41,7 @@ jobs:
       - name: Determine merge target hash
         id: merge_target
         run: |
-          git remote add upstream ${{ steps.upstream_repo.outputs.result }}
+          git remote add upstream https://github.com/openjdk/${{ steps.upstream_repo.outputs.result }}
           git fetch upstream
           echo "::set-output name="hash::`git rev-parse upstream/${TARGET_BRANCH}`"
         if: steps.check_submit.outputs.should_run != 'false'

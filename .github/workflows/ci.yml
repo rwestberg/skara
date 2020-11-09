@@ -47,9 +47,9 @@ jobs:
       - name: Determine merge target hash
         id: merge_target
         run: |
-          git fetch https://github.com/openjdk/${{ steps.upstream_repo.outputs.result }}
-          echo "::set-output name=hash::`git rev-parse upstream/${TARGET_BRANCH}`"
-          echo "::set-output name=command::git fetch https://github.com/openjdk/${{ steps.upstream_repo.outputs.result }}"
+          git fetch https://github.com/openjdk/${{ steps.upstream_repo.outputs.result }} ${TARGET_BRANCH}
+          echo "::set-output name=hash::`git rev-parse FETCH_HEAD`"
+          echo "::set-output name=command::git fetch https://github.com/openjdk/${{ steps.upstream_repo.outputs.result }} ${TARGET_BRANCH}"
         if: steps.check_submit.outputs.should_run != 'false'
 
       - name: Determine merge strategy

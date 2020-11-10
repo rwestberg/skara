@@ -41,11 +41,16 @@ jobs:
       - name: Show result
         run: echo "git webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }}"
 
-      - name: Checkout the Skara source
+      - name: Checkout the latest Skara source
         uses: actions/checkout@v2
         with:
+          repository: "openjdk/skara"
           path: skara
 
       - name: Build the Skara cli tools
-        run: sh gradlew.sh
+        run: sh gradlew
         working-directory: skara
+
+      - name: Generate the webrev
+        run: "PATH=$HOME/skara/bin/:$PATH git webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
+        working-directory: src

@@ -1,0 +1,98 @@
+diff a/.github/workflows/webrev.yml b/.github/workflows/webrev.yml
+--- /dev/null
++++ b/.github/workflows/webrev.yml
+@@ -0,0 +1,94 @@
++name: Generate webrev
++
++on:
++  push:
++    branches-ignore:
++      - master
++
++  workflow_dispatch:
++    inputs:
++      base:
++        description: "Base hash / ref"
++        required: true
++        default: "master"
++      branch:
++        description: "GitHub Pages branch"
++        required: true
++        default: "github_pages"
++
++jobs:
++  generate:
++    name: Generate
++    runs-on: "ubuntu-latest"
++
++    steps:
++      - name: Determine target project name (fork source)
++        id: upstream_repo
++        uses: actions/github-script@v3
++        with:
++          result-encoding: string
++          script: "return (await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo })).data.source.name"
++
++      - name: Checkout the source
++        uses: actions/checkout@v2
++        with:
++          path: src
++          fetch-depth: 1000
++
++      - name: Determine base hash
++        id: target
++        run: |
++          git fetch https://github.com/openjdk/${{ steps.upstream_repo.outputs.result }} ${{ github.event.inputs.base }}
++          echo "::set-output name=merge_base::`git merge-base FETCH_HEAD ${{ github.sha }}`"
++        working-directory: src
++
++      - name: Show result
++        run: echo "git webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }}"
++
++      - name: Checkout the latest Skara source
++        uses: actions/checkout@v2
++        with:
++          repository: "openjdk/skara"
++          path: skara
++
++      - name: Determine Skara version
++        id: skara
++        run: echo "::set-output name=hash::`git rev-parse HEAD`"
++        working-directory: skara
++
++      - name: Download pre-built tools from cache (if available)
++        uses: actions/cache@v2
++        with:
++          path: ${{ github.workspace }}/skara/bin
++          key: skara-${{ steps.skara.outputs.hash }}
++
++      - name: Generate the webrev
++        run: "git -c include.path=${{ github.workspace }}/skara/skara.gitconfig skara webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
++        working-directory: src
++
++      - name: Determine final webrev folder name
++        id: webrev
++        run: echo "::set-output name=folder::webrev.`git log -1 ${{ steps.target.outputs.merge_base }} --pretty=format:%h`-`git log -1 ${{ github.sha }} --pretty=format:%h`"
++        working-directory: src
++
++      - name: Checkout GitHub pages branch
++        id: checkout_output
++        run: |
++          git fetch origin github_pages
++          git checkout github_pages
++        working-directory: src
++        continue-on-error: true
++
++      - name: Create new GitHub pages branch
++        run: git switch --discard-changes --orphan github_pages
++        working-directory: src
++        if: steps.checkout_output.outcome == 'failure'
++
++      - name: Move webrev to final destination folder and commit it
++        run: |
++          mkdir -p webrevs
++          mv $HOME/webrev webrevs/${{ steps.webrev.outputs.folder }}
++          git add webrevs/${{ steps.webrev.outputs.folder }}/*
++          git -c user.name="webrev" -c user.email="webrev@github.actions" commit -m "Generated webrev"
++          git push origin github_pages
++        working-directory: src

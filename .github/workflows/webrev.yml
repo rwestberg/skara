@@ -66,6 +66,11 @@ jobs:
         run: "git -c include.path=${{ github.workspace }}/skara/skara.gitconfig skara webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
         working-directory: src
 
+      - name: Determine final webrev folder name
+        id: webrev
+        run: echo "::set-output name=folder::webrev.`git log -1 ${{ steps.target.outputs.merge_base }} --pretty=format:%h`-`git log -1 ${{ github.sha }} --pretty=format:%h`"
+        working-directory: src
+
       - name: Checkout GitHub pages branch
         id: checkout_output
         run: git checkout github_pages
@@ -78,3 +83,12 @@ jobs:
           git rm --cached -r .
         working-directory: src
         if: steps.checkout_output.outcome == 'failure'
+
+      - name: Move webrev to final destination folder and commit it
+        run: |
+          mkdir -p webrevs
+          mv $HOME/webrev webrevs/${{ steps.webrev.outputs.folder }}
+          git add webrevs/${{ steps.webrev.outputs.folder }}
+          git commit -m "Generated webrev"
+          git push origin
+        working-directory: src

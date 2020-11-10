@@ -48,7 +48,7 @@ jobs:
           path: skara
 
       - name: Build the Skara cli tools
-        run: sh gradlew
+        run: make install
         working-directory: skara
 
       - name: Generate the webrev

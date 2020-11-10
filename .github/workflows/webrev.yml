@@ -47,6 +47,18 @@ jobs:
           repository: "openjdk/skara"
           path: skara
 
+      - name: Determine Skara version
+        id: skara
+        run: echo "::set-output name=hash::`git rev-parse HEAD`"
+        working-directory: skara
+
+      - name: Download pre-built tools from cache (if available)
+        id: skara
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/skara/bin
+          key: skara-${{ steps.skara.outputs.hash }}
+
       - name: Generate the webrev
         run: "git -c include.path=${{ github.workspace }}/skara/skara.gitconfig skara webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
         working-directory: src

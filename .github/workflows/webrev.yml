@@ -80,7 +80,9 @@ jobs:
       - name: Create new GitHub pages branch
         run: |
           git checkout --orphan github_pages
-          git rm --cached -r .
+          mv .git ..
+          rm -rf .
+          mv ../.git .
         working-directory: src
         if: steps.checkout_output.outcome == 'failure'
 
@@ -90,5 +92,5 @@ jobs:
           mv $HOME/webrev webrevs/${{ steps.webrev.outputs.folder }}
           git add webrevs/${{ steps.webrev.outputs.folder }}
           git -c user.name="webrev" -c user.email="webrev@github.actions" commit -m "Generated webrev"
-          git push origin
+          git push origin github_pages
         working-directory: src

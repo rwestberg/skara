@@ -48,5 +48,5 @@ jobs:
           path: skara
 
       - name: Generate the webrev
-        run: "git -c include.path=$HOME/skara/skara.gitconfig skara webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
+        run: "git -c include.path=${{ github.workspace }}/skara/skara.gitconfig skara webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
         working-directory: src

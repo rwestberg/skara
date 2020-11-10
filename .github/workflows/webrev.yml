@@ -36,6 +36,7 @@ jobs:
         run: |
           git fetch https://github.com/openjdk/${{ steps.upstream_repo.outputs.result }} ${{ github.event.inputs.base }}
           echo "::set-output name=merge_base::`git merge-base FETCH_HEAD ${{ github.sha }}`"
+        working-directory: src
 
       - name: Show result
         run: echo "git webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }}"

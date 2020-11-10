@@ -73,13 +73,14 @@ jobs:
 
       - name: Checkout GitHub pages branch
         id: checkout_output
-        run: git checkout github_pages
+        run: |
+          git fetch origin github_pages
+          git checkout github_pages
         working-directory: src
         continue-on-error: true
 
       - name: Create new GitHub pages branch
-        run: |
-          git switch --discard-changes --orphan github_pages
+        run: git switch --discard-changes --orphan github_pages
         working-directory: src
         if: steps.checkout_output.outcome == 'failure'
 

@@ -79,7 +79,7 @@ jobs:
 
       - name: Create new GitHub pages branch
         run: |
-          git git switch --discard-changes --orphan github_pages
+          git switch --discard-changes --orphan github_pages
         working-directory: src
         if: steps.checkout_output.outcome == 'failure'
 

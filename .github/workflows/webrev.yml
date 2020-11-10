@@ -87,7 +87,7 @@ jobs:
         run: |
           mkdir -p webrevs
           mv $HOME/webrev webrevs/${{ steps.webrev.outputs.folder }}
-          git add webrevs/${{ steps.webrev.outputs.folder }}
+          git add webrevs/${{ steps.webrev.outputs.folder }}/*
           git -c user.name="webrev" -c user.email="webrev@github.actions" commit -m "Generated webrev"
           git push origin github_pages
         working-directory: src

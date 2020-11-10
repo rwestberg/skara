@@ -80,9 +80,7 @@ jobs:
       - name: Create new GitHub pages branch
         run: |
           git checkout --orphan github_pages
-          mv .git ..
-          rm -rf .
-          mv ../.git .
+          git clean -f -i -d
         working-directory: src
         if: steps.checkout_output.outcome == 'failure'
 

@@ -1,0 +1,50 @@
+name: Generate webrev
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+  workflow_dispatch:
+    inputs:
+      base:
+        description: "Base hash / ref"
+        required: true
+        default: "master"
+
+jobs:
+  generate:
+    name: Generate
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Determine target project name (fork source)
+        id: upstream_repo
+        uses: actions/github-script@v3
+        with:
+          result-encoding: string
+          script: "return (await github.repos.get( {owner: context.repo.owner, repo: context.repo.repo })).data.source.name"
+
+      - name: Checkout the source
+        uses: actions/checkout@v2
+        with:
+          path: src
+          fetch-depth: 1000
+
+      - name: Determine base hash
+        id: target
+        run: |
+          git fetch https://github.com/openjdk/${{ steps.upstream_repo.outputs.result }} ${{ github.event.inputs.base }}
+          echo "::set-output name=merge_base::`git merge-base FETCH_HEAD ${{ github.sha }}`"
+
+      - name: Show result
+        run: echo "git webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }}"
+
+      - name: Checkout the Skara source
+        uses: actions/checkout@v2
+        with:
+          path: skara
+
+      - name: Build the Skara cli tools
+        run: sh gradlew.sh
+        working-directory: skara

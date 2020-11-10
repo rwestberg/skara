@@ -11,6 +11,10 @@ on:
         description: "Base hash / ref"
         required: true
         default: "master"
+      branch:
+        description: "GitHub Pages branch"
+        required: true
+        default: "github_pages"
 
 jobs:
   generate:
@@ -61,3 +65,16 @@ jobs:
       - name: Generate the webrev
         run: "git -c include.path=${{ github.workspace }}/skara/skara.gitconfig skara webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
         working-directory: src
+
+      - name: Checkout GitHub pages branch
+        id: checkout_output
+        run: git checkout github_pages
+        working-directory: src
+        continue-on-error: true
+
+      - name: Create new GitHub pages branch
+        run: |
+          git checkout --orphan github_pages
+          git rm --cached -r .
+        working-directory: src
+        if: steps.checkout_output.outcome == 'failure'

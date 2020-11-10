@@ -47,10 +47,6 @@ jobs:
           repository: "openjdk/skara"
           path: skara
 
-      - name: Build the Skara cli tools
-        run: make install
-        working-directory: skara
-
       - name: Generate the webrev
-        run: "PATH=$HOME/skara/bin/:$PATH git webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
+        run: "git -c include.path=$HOME/skara/skara.gitconfig skara webrev --base ${{ steps.target.outputs.merge_base }} --head ${{ github.sha }} --output $HOME/webrev"
         working-directory: src
